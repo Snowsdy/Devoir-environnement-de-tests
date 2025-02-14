@@ -26,11 +26,14 @@ jobs:
       - name: ✅ Exécution des tests Pytest
         run: pytest --maxfail=3 --disable-warnings -v
 
-      - name: Send email notification
-        uses: mailersend/mailersend-action@v1
-        with:
-          api_key: ${{ secrets.MAILERSEND_API_KEY }}
-          from: ${{ secrets.EMAIL_FROM }}
-          to: ${{ secrets.EMAIL_TO }}
-          subject: "Notification: GitHub Actions Workflow"
-          text: "Les test ont été exécuté avec succès."
+      - name: Send email notification via MailerSend
+        run: |
+          curl -X POST "https://api.mailersend.com/v1/email" \
+          -H "Authorization: Bearer ${{ secrets.MAILERSEND_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "from": {"email": "${{ secrets.EMAIL_FROM }}", "name": "GitHub Actions x MailerSend"},
+            "to": [{"email": "${{ secrets.EMAIL_TO }}", "name": "Guest"}],
+            "subject": "GitHub Actions Notification",
+            "text": "Le workflow GitHub Actions a été exécuté avec succès."
+          }'
