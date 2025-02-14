@@ -1,0 +1,27 @@
+name: Pytest Actions
+
+on: [push, pull_request]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest # Machine virtuelle où les tests seront exécutés
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+      - name: 🛎️ Checkout du code
+        uses: actions/checkout@v4 # Récupère le code source du dépôt
+
+      - name: 🐍 Configuration de Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 📦 Installation des dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ✅ Exécution des tests Pytest
+        run: pytest --maxfail=3 --disable-warnings -v
